@@ -23,9 +23,6 @@ You can then browse the (unsecured) timezone converter at `http://localhost:4000
   user's database.
 - I left the init boilerplate as is, as opposed to adding a commit where I
   remove all unneeded bits.
-- There is currently no push update if cities get added/deleted. It either
-  requires a manual refresh or other interaction. If using the "current time",
-  then the time update will also refresh the cities.
 - I did not setup dialyzer (dialyxir). With Elixir adding more type checking
   directly, its effort/value tradeoff doesn't seem worth it any longer.
 - There is an opportunity to extract the HTML template into its own heex file.

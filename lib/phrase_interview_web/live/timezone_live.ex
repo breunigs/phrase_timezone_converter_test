@@ -3,6 +3,7 @@ defmodule PhraseInterviewWeb.TimezoneLive do
   require Logger
 
   @fallback_timezone "Europe/Berlin"
+  @update_topic "updates"
 
   def render(%{selected_time: sel_time, default_timezone: tz} = assigns) do
     display =
@@ -110,6 +111,9 @@ defmodule PhraseInterviewWeb.TimezoneLive do
   end
 
   def mount(params, _session, socket) do
+    PhraseInterviewWeb.Endpoint.subscribe(@update_topic)
+    if connected?(socket), do: Phoenix.PubSub.subscribe(PhraseInterview.PubSub, @update_topic)
+
     socket =
       socket
       |> set_locale(params)
@@ -157,6 +161,8 @@ defmodule PhraseInterviewWeb.TimezoneLive do
         city_names: city_names()
       })
 
+    Phoenix.PubSub.broadcast(PhraseInterview.PubSub, @update_topic, :reload_zones)
+
     {:noreply, socket}
   end
 
@@ -168,6 +174,7 @@ defmodule PhraseInterviewWeb.TimezoneLive do
     end
 
     socket = assign(socket, :city_names, city_names())
+    Phoenix.PubSub.broadcast(PhraseInterview.PubSub, @update_topic, :reload_zones)
 
     {:noreply, socket}
   end
@@ -194,6 +201,11 @@ defmodule PhraseInterviewWeb.TimezoneLive do
 
   def handle_info(:use_current_time, socket) do
     {:noreply, use_current_time(socket)}
+  end
+
+  def handle_info(:reload_zones, socket) do
+    socket = assign(socket, %{saved_zones: saved_zones(socket.assigns.selected_time)})
+    {:noreply, socket}
   end
 
   defp use_current_time(socket) do

@@ -85,6 +85,20 @@ defmodule PhraseInterviewWeb.TimezoneLiveTest do
 
       assert render_submit(form, %{"name" => @invalid_timezone}) =~ "Add City Name"
     end
+
+    test "updates other live view", %{conn: conn} do
+      city = PhraseInterview.TimeHelpers.zone_to_city(@valid_timezone)
+      {:ok, view1, html1} = live(conn, "/timezone")
+      refute html1 =~ ">#{city}</td>"
+
+      {:ok, view2, html2} = live(conn, "/timezone")
+      refute html2 =~ ">#{city}</td>"
+
+      form = element(view2, "form[phx-submit=add_city]")
+      assert render_submit(form, %{"name" => @valid_timezone}) =~ ">#{city}</td>"
+
+      assert view1 |> render() =~ ">#{city}</td>"
+    end
   end
 
   describe "delete_city" do
