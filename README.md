@@ -23,8 +23,6 @@ You can then browse the (unsecured) timezone converter at `http://localhost:4000
   user's database.
 - I left the init boilerplate as is, as opposed to adding a commit where I
   remove all unneeded bits.
-- I did not translate messages to save time. For a real application, an
-  implementation via Gettext seems reasonable.
 - There is currently no push update if cities get added/deleted. It either
   requires a manual refresh or other interaction. If using the "current time",
   then the time update will also refresh the cities.
@@ -49,3 +47,6 @@ You can then browse the (unsecured) timezone converter at `http://localhost:4000
   that decision shouldn't be reflected in our time zone converter.
 - sqlite was chosen because it's least painful for tiny applications and
   installation
+- I'm aware of the `set_locale` package, but it caused infinite redirects, for
+  which I could not identify the issue in a short timebox. Hence the ad-hoc
+  implementation.

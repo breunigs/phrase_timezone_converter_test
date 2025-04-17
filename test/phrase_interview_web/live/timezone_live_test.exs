@@ -102,4 +102,15 @@ defmodule PhraseInterviewWeb.TimezoneLiveTest do
       refute Enum.member?(PhraseInterview.TimezonesQuery.list(), @valid_timezone)
     end
   end
+
+  describe "locale selection" do
+    test "updates locale", %{conn: conn} do
+      {:ok, view, html} = live(conn, "/timezone?locale=en")
+      assert html =~ "Enter Time"
+
+      assert view
+             |> element("a", "Deutsch")
+             |> render_click() =~ "Zeit eingeben"
+    end
+  end
 end

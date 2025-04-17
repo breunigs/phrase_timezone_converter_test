@@ -20,7 +20,9 @@ defmodule PhraseInterviewWeb.TimezoneLive do
     <div class="max-w-2xl mx-auto p-6 space-y-8">
       <form>
         <label for="time">
-          <h1 class="block text-xl font-semibold text-gray-800 mb-2">Enter Time</h1>
+          <h1 class="block text-xl font-semibold text-gray-800 mb-2">
+            <%= gettext "Enter Time", locale: @locale %>
+          </h1>
         </label>
         <input
           type="time"
@@ -31,18 +33,18 @@ defmodule PhraseInterviewWeb.TimezoneLive do
           phx-change="use_custom_time"
         />
         <a href="#" phx-click="use_current_time" class="text-blue-600 hover:underline">
-          Use Current Time
+          <%= gettext "Use Current Time", locale: @locale %>
         </a>
       </form>
 
-      <h1 class="block text-xl font-semibold text-gray-800 mb-2">Your Timezones</h1>
+      <h1 class="block text-xl font-semibold text-gray-800 mb-2"><%= gettext "Your Timezones", locale: @locale %></h1>
       <%= if @saved_zones != [] do %>
         <table class="w-full table-auto border-collapse">
           <thead class="text-left">
             <tr>
-              <th class="py-1">City</th>
-              <th class="py-1">Time</th>
-              <th class="py-1">TZ</th>
+              <th class="py-1"><%= gettext "City", locale: @locale %></th>
+              <th class="py-1"><%= gettext "Time", locale: @locale %></th>
+              <th class="py-1"><%= gettext "TZ", locale: @locale %></th>
               <th class="py-1"></th>
             </tr>
           </thead>
@@ -55,7 +57,7 @@ defmodule PhraseInterviewWeb.TimezoneLive do
                 <a
                   href="#"
                   phx-click="delete_city"
-                  title={"Remove #{city} (#{zone})"}
+                  title={gettext "Remove timezone", locale: @locale}
                   phx-value-zone={zone}
                 >
                   <.icon name="hero-trash-solid" />
@@ -67,7 +69,9 @@ defmodule PhraseInterviewWeb.TimezoneLive do
       <% end %>
 
       <.form for={@add_city_form} phx-submit="add_city">
-        <label for="name" class="block text-lg font-medium mb-1">Add City Name</label>
+        <label for="name" class="block text-lg font-medium mb-1">
+          <%= gettext "Add City Name", locale: @locale %>
+        </label>
         <div class="flex items-end gap-4 items-start">
           <div class="flex-1">
             <.input
@@ -77,7 +81,7 @@ defmodule PhraseInterviewWeb.TimezoneLive do
               name="name"
               value={@add_city_form[:name].value}
               autocomplete="off"
-              placeholder="Type City Name here…"
+              placeholder={gettext "Type City Name here…", locale: @locale}
               field={@add_city_form[:name]}
             />
           </div>
@@ -85,7 +89,7 @@ defmodule PhraseInterviewWeb.TimezoneLive do
             type="submit"
             class="mt-[2px] bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
           >
-            Add
+            <%= gettext "Add", locale: @locale %>
           </button>
         </div>
         <datalist id="city_names">
@@ -94,22 +98,46 @@ defmodule PhraseInterviewWeb.TimezoneLive do
           <% end %>
         </datalist>
       </.form>
+
+      <h1 class="block text-xl font-semibold text-gray-800 mb-2">
+        <%= gettext "Select Language", locale: @locale %>
+      </h1>
+      <.link patch={~p"/timezone?locale=de"} class="text-blue-600 hover:underline">Deutsch</.link>
+      |
+      <.link patch={~p"/timezone?locale=en"} class="text-blue-600 hover:underline">English</.link>
     </div>
     """
   end
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     socket =
       socket
+      |> set_locale(params)
       |> set_default_timezone()
       |> assign(%{
         city_names: city_names(),
         add_city_form: blank_city_form(),
-        page_title: "Timezone Converter"
+        page_title: gettext("Timezone Converter")
       })
       |> use_current_time()
 
     {:ok, socket}
+  end
+
+  defp set_locale(socket, params) do
+    gettext = Application.get_env(:phrase_interview, PhraseInterviewWeb.Gettext)
+
+    locale =
+      if params["locale"] in gettext[:locales],
+        do: params["locale"],
+        else: gettext[:default_locale]
+
+    Gettext.put_locale(PhraseInterviewWeb.Gettext, locale)
+    assign(socket, :locale, locale)
+  end
+
+  def handle_params(params, _url, socket) do
+    {:noreply, set_locale(socket, params)}
   end
 
   def handle_event("add_city", params, socket) do
