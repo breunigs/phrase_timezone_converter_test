@@ -17,7 +17,9 @@ defmodule PhraseInterviewWeb.Router do
   scope "/", PhraseInterviewWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    get "/", PageController, :redirect_to_timezone
+
+    live "/timezone", TimezoneLive
   end
 
   # Other scopes may use custom stacks.

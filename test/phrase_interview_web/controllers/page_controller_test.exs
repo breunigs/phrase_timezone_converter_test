@@ -3,6 +3,6 @@ defmodule PhraseInterviewWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Peace of mind from prototype to production"
+    assert "/timezone" = redirected_to(conn, 302)
   end
 end

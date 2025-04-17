@@ -1,18 +1,51 @@
 # PhraseInterview
 
-To start your Phoenix server:
+## Setup
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+```bash
+# Install Elixir if not already done so, e.g.
+asdf install
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+# Install sqlite if not already done so, e.g.
+apt install sqlite3
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+mix setup
+mix test
+mix phx.server
+```
 
-## Learn more
+You can then browse the (unsecured) timezone converter at `http://localhost:4000`
 
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+## Notes
+
+- The initial time zone is hardcoded for this exercise. In a proper application,
+  it should be guessed from IP, sent via JS from the browser, or stored in the
+  user's database.
+- I left the init boilerplate as is, as opposed to adding a commit where I
+  remove all unneeded bits.
+- I did not translate messages to save time. For a real application, an
+  implementation via Gettext seems reasonable.
+- There is currently no push update if cities get added/deleted. It either
+  requires a manual refresh or other interaction. If using the "current time",
+  then the time update will also refresh the cities.
+- I did not setup dialyzer (dialyxir). With Elixir adding more type checking
+  directly, its effort/value tradeoff doesn't seem worth it any longer.
+- There is an opportunity to extract the HTML template into its own heex file.
+  Similarly, `city_names/0` or `saved_zones/1` might be moved outside of
+  `TimezoneLive`. I opted not to do additional refactoring on the exercise to
+  save time, and because extracting pieces elsewhere at this small level doesn't
+  strike me as obviously better.
+- It's the first time I used Tailwind CSS. How did I do? I didn't check this on
+  mobile browsers.
+- The `time` input might use AM/PM style, but the table will always use 24h
+  style. Clearly a future improvement possibility.
+- I skipped ARIA to save time for this exercise.
+- TzData also contains timezone without city names like "Canada/Pacific". The
+  implementation currently ignores that. For a real product, the UI requirements
+  would need to be evolved, because it seems sensible to keep such timezones
+  available instead of only allowing "real cities". Similarly, "Bejing" as an
+  example from the exercise specification is not an actual timezone in TzData
+  upstream, for which many bug reports can be found. It's intentional, but maybe
+  that decision shouldn't be reflected in our time zone converter.
+- sqlite was chosen because it's least painful for tiny applications and
+  installation

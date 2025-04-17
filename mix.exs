@@ -55,6 +55,7 @@ defmodule PhraseInterview.MixProject do
       {:req, "~> 0.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
+      {:tzdata, "~> 1.1"},
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
